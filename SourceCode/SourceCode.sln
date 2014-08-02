@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveHuffmanLib", "AdaptiveHuffmanLib\AdaptiveHuffmanLib.csproj", "{ED4D4707-3AB8-4047-80B4-A46534AE0047}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDemo01", "TestDemo01\TestDemo01.csproj", "{0C6A9B00-B128-45F9-9A5B-8F67EB8185F8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED4D4707-3AB8-4047-80B4-A46534AE0047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED4D4707-3AB8-4047-80B4-A46534AE0047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED4D4707-3AB8-4047-80B4-A46534AE0047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED4D4707-3AB8-4047-80B4-A46534AE0047}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C6A9B00-B128-45F9-9A5B-8F67EB8185F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C6A9B00-B128-45F9-9A5B-8F67EB8185F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C6A9B00-B128-45F9-9A5B-8F67EB8185F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C6A9B00-B128-45F9-9A5B-8F67EB8185F8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
