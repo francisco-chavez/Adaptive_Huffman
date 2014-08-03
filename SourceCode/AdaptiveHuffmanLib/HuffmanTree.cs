@@ -47,22 +47,11 @@ namespace Unv.AdaptiveHuffmanLib
 		#region Methods
 		public BitArray InsertCharacter(char character)
 		{
-			BitArray result = null;
-			List<bool> characterBits = new List<bool>(8);
+			TreeNode	characterNode	= FindCharacterNode(character);
+			List<bool>	encodedBits		= GetCharacterBits(characterNode, character);
 
-			TreeNode characterNode = FindCharacterNode(character);
 
-			bool alreadyPresent = ContainsCharacter(character);
-
-			if (!alreadyPresent)
-				AddCharacter(character);
-			else
-				IncreamentCharacter(character);
-
-			_root.UpdateFrequency();
-
-			BalanceTree();
-			return result;
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -96,6 +85,34 @@ namespace Unv.AdaptiveHuffmanLib
 
 				currentNode = currentNode.Prev;
 			}
+		}
+
+		private List<bool> GetCharacterBits(TreeNode characterNode, char character)
+		{
+			List<bool> bits = new List<bool>();
+
+			TreeNode current	= characterNode;
+			TreeNode parent		= characterNode.Parent;
+
+			while (parent != null)
+			{
+				bits.Add(parent.Right == current);
+
+				current = parent;
+				parent	= current.Parent;
+			}
+
+			bits.Reverse();
+
+			if (characterNode.IsEmpty)
+			{
+				byte[] charBytes = Encoding.Unicode.GetBytes(new char[] { character });
+				BitArray bitArray = new BitArray(charBytes);
+				for (int i = 0; i < bitArray.Length; i++)
+					bits.Add(bitArray[i]);
+			}
+
+			return bits;
 		}
 
 		public bool ContainsCharacter(char character)
