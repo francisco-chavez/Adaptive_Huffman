@@ -48,7 +48,7 @@ namespace Unv.AdaptiveHuffmanLib
 		public BitArray InsertCharacter(char character)
 		{
 			TreeNode	characterNode	= FindCharacterNode(character);
-			List<bool>	encodedBits		= GetCharacterBits(characterNode, character);
+			bool[]		encodedBits		= GetCharacterBits(characterNode, character);
 
 
 			throw new NotImplementedException();
@@ -87,10 +87,20 @@ namespace Unv.AdaptiveHuffmanLib
 			}
 		}
 
-		private List<bool> GetCharacterBits(TreeNode characterNode, char character)
+		/// <summary>
+		/// Given a TreeNode, this method will return the path to that node from the 
+		/// root. Starting from the start of the bool[], a false means go to the left 
+		/// child, and true means go to the right child. If the character node is the
+		/// empty node, the character's bit patter will be appended to the end of the
+		/// array. The character will use Unicode with a little indian bit 
+		/// arrangment.
+		/// </summary>
+		private bool[] GetCharacterBits(TreeNode characterNode, char character)
 		{
 			List<bool> bits = new List<bool>();
 
+			// Back track from the given node to the root node. We will stop when the
+			// current node is the root (which has no parent).
 			TreeNode current	= characterNode;
 			TreeNode parent		= characterNode.Parent;
 
@@ -102,8 +112,12 @@ namespace Unv.AdaptiveHuffmanLib
 				parent	= current.Parent;
 			}
 
+			// The bits we have are going from character location to root, we need 
+			// them to go the other way.
 			bits.Reverse();
 
+			// If the character isn't in the tree yet, we'll use the character's 
+			// actual bit pattern to finish off the rest of the bit path.
 			if (characterNode.IsEmpty)
 			{
 				byte[] charBytes = Encoding.Unicode.GetBytes(new char[] { character });
@@ -112,7 +126,7 @@ namespace Unv.AdaptiveHuffmanLib
 					bits.Add(bitArray[i]);
 			}
 
-			return bits;
+			return bits.ToArray();
 		}
 
 		public bool ContainsCharacter(char character)
