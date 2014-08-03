@@ -65,14 +65,31 @@ namespace Unv.AdaptiveHuffmanLib
 			return result;
 		}
 
+		/// <summary>
+		/// This method returns the node for the given character in the Huffman Tree.
+		/// If the given character is not in the tree, it will return the empty node.
+		/// </summary>
 		private TreeNode FindCharacterNode(char character)
 		{
+			// The heigher the node's frequency, the further back is will be in the 
+			// list. So, starting at the end of the list, and moving forward will 
+			// speed things up (on average).
 			TreeNode currentNode = _tail.Prev;
 
 			while (true)
 			{
+				// The branch nodes contain a Character property and this property 
+				// is of type char; char is a struct, so it always contains a value. 
+				// This means that there is a slim chance that a branch node will 
+				// contain the character we are looking for. Because of this, we
+				// first make sure that the node is a leaf node in the tree.
+				// - FCT
 				if (currentNode.IsLeaf)
 				{
+					// The empty node has a frequency of zero; for this reason, it 
+					// will always be the first node in the linked list. If we don't 
+					// find the node for the requested character, be the time we 
+					// reach the front of the list, then it's not in the list.
 					if (currentNode.IsEmpty || currentNode.Character == character)
 						return currentNode;
 				}
@@ -119,7 +136,7 @@ namespace Unv.AdaptiveHuffmanLib
 			newBranch.Left	= new TreeNode();
 			newBranch.Right = new TreeNode();
 
-			newBranch.Left.Root			= newBranch;
+			newBranch.Left.Parent			= newBranch;
 			newBranch.Right.Right		= newBranch;
 
 			newBranch.Right.Character	= character;
@@ -137,7 +154,7 @@ namespace Unv.AdaptiveHuffmanLib
 			while (parent != null)
 			{
 				parent.Frequency = parent.Left.Frequency + parent.Right.Frequency;
-				parent = parent.Root;
+				parent = parent.Parent;
 			}
 		}
 
@@ -196,7 +213,7 @@ namespace Unv.AdaptiveHuffmanLib
 			public TreeNode Next		{ get; set; }
 			public TreeNode Prev		{ get; set; }
 
-			public TreeNode Root		{ get; set; }
+			public TreeNode Parent		{ get; set; }
 			public TreeNode Left		{ get; set; }
 			public TreeNode Right		{ get; set; }
 
@@ -218,7 +235,7 @@ namespace Unv.AdaptiveHuffmanLib
 				this.Prev		= null;
 
 				this.Right		= null;
-				this.Root		= null;
+				this.Parent		= null;
 			}
 			#endregion
 
