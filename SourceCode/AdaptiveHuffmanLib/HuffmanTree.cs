@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,8 +45,13 @@ namespace Unv.AdaptiveHuffmanLib
 
 
 		#region Methods
-		public void InsertCharacter(char character)
+		public BitArray InsertCharacter(char character)
 		{
+			BitArray result = null;
+			List<bool> characterBits = new List<bool>(8);
+
+			TreeNode characterNode = FindCharacterNode(character);
+
 			bool alreadyPresent = ContainsCharacter(character);
 
 			if (!alreadyPresent)
@@ -56,6 +62,23 @@ namespace Unv.AdaptiveHuffmanLib
 			_root.UpdateFrequency();
 
 			BalanceTree();
+			return result;
+		}
+
+		private TreeNode FindCharacterNode(char character)
+		{
+			TreeNode currentNode = _tail.Prev;
+
+			while (true)
+			{
+				if (currentNode.IsLeaf)
+				{
+					if (currentNode.IsEmpty || currentNode.Character == character)
+						return currentNode;
+				}
+
+				currentNode = currentNode.Prev;
+			}
 		}
 
 		public bool ContainsCharacter(char character)
