@@ -361,7 +361,7 @@ namespace Unv.AdaptiveHuffmanLib
 		/// This method returns an array of strings with the current character, 
 		/// frequency, and path of the leaf nodes that make up the tree.
 		/// </summary>
-		public string[] GetTestReadout()
+		public string[] GetTestReadout(bool includeBranches = false)
 		{
 			List<string> info = new List<string>();
 
@@ -406,6 +406,31 @@ namespace Unv.AdaptiveHuffmanLib
 					//
 					// Add a empty line for readability
 					//
+					info.Add(string.Empty);
+				}
+				else if (includeBranches)
+				{
+					info.Add("Branch Node:");
+					info.Add(string.Format("Frequency: {0}", currentNode.Frequency));
+
+
+					//
+					// Get the node's path data
+					//
+
+					// We just want the path of the given node, but we don't want to 
+					// encode the character data if it happens to be the Empty Node.
+					bool[] bitPath = GetCharacterBits(currentNode, 'a', false);
+
+					// Convert the the path into a string that is more easily read by 
+					// humans
+					StringBuilder b = new StringBuilder();
+					b.Append("Node Path: ");
+					for (int i = 0; i < bitPath.Length; i++)
+						b.Append(bitPath[i] ? 'R' : 'L');
+
+					info.Add(b.ToString());
+
 					info.Add(string.Empty);
 				}
 
