@@ -204,34 +204,6 @@ namespace Unv.AdaptiveHuffmanLib
 			return nextNode;
 		}
 
-		public bool ContainsCharacter(char character)
-		{
-			// The most frequent character is going to be  towards
-			// the end of the linked list. So, if we start at the
-			// back, and moves towards the front, we will find is
-			// sooner (on average).
-			bool		result		= false;
-			TreeNode	currentNode = _tail.Prev;
-
-			while (currentNode != _head)
-			{
-				if (currentNode.IsEmpty || !currentNode.IsLeaf)
-				{
-					// If the current node isn't an empty leaf node,
-					// then we don't want it to be marked down.
-				}
-				else if (currentNode.Character == character)
-				{
-					result = true;
-					break;
-				}
-
-				currentNode = currentNode.Prev;
-			}
-
-			return result;
-		}
-
 		/// <summary>
 		/// This method will create and return a new TreeNode for the given 
 		/// character.
