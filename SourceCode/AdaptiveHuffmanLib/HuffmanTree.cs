@@ -135,23 +135,28 @@ namespace Unv.AdaptiveHuffmanLib
 			return bits.ToArray();
 		}
 
+		/// <summary>
+		/// This method updates and balances the tree based on the new character data 
+		/// that is being added.
+		/// </summary>
 		private void UpdateTree(TreeNode characterNode, char character)
 		{
-			// Update or insert the tree's character data.
+			// Insert the character data into the tree if needed.
 			if (characterNode.IsEmpty)
 				characterNode = AddCharacterNode(character);
-			else
-				characterNode.Frequency++;
 
-			TreeNode nodeToUpdate = characterNode.Parent;
+			// Re-balance the tree
+			TreeNode nodeToUpdate = characterNode;
 
 			while (nodeToUpdate != null)
 			{
-				nodeToUpdate.Frequency = nodeToUpdate.Left.Frequency + nodeToUpdate.Right.Frequency;
+				nodeToUpdate.Frequency++;
 
 				if (!SiblingPropertiesHold(nodeToUpdate))
 				{
 					// restore the sibling properties of the nodes by switching them around
+					TreeNode nodeToSwitchPositionWith = FindNodeToSwitchWith(nodeToUpdate);
+					SwitchNodePositions(nodeToUpdate, nodeToSwitchPositionWith);
 				}
 
 				nodeToUpdate = nodeToUpdate.Parent;
@@ -246,31 +251,105 @@ namespace Unv.AdaptiveHuffmanLib
 			return newBranch.Right;
 		}
 
+		/// <summary>
+		/// This method will switch the positions of the two given nodes. The nodes 
+		/// will have their positions in the tree sturcture switched, and their 
+		/// positions in the linked list structure switched.
+		/// </summary>
+		/// <<remarks>
+		/// TreeNode 'a' must come before TreeNode 'b' within the linked list 
+		/// structure.
+		/// </remarks>
+		private void SwitchNodePositions(TreeNode a, TreeNode b)
+		{
+			if (a.Parent == b.Parent)
+			{
+				SwitchChildNodes(a.Parent);
+			}
+			else
+			{
+				//
+				// Switch nodes within linked list
+				//
+				TreeNode aPrevious	= a.Prev;
+				TreeNode aNext		= a.Next;
+
+				TreeNode bPrevious	= b.Prev;
+				TreeNode bNext		= b.Next;
+
+				aPrevious.Next = b;
+				b.Prev = aPrevious;
+
+				if (aNext == b)
+				{
+					b.Next = a;
+					a.Prev = b;
+				}
+				else
+				{
+					b.Next = aNext;
+					aNext.Prev = b;
+
+					a.Prev = bPrevious;
+					bPrevious.Next = a;
+				}
+
+				a.Next = bNext;
+				bNext.Prev = a;
+
+				//
+				// Switch nodes within tree
+				//
+				TreeNode aParent = a.Parent;
+				TreeNode bParent = b.Parent;
+
+				if (aParent.Left == a)
+					aParent.Left = b;
+				else
+					aParent.Right = b;
+
+				if (bParent.Left == b)
+					bParent.Left = a;
+				else
+					bParent.Right = b;
+
+				b.Parent = aParent;
+				a.Parent = bParent;
+			}
+		}
+
+		/// <summary>
+		/// Switches the positions of the two child nodes of the given parent node. 
+		/// This switch will applied to their positions in the tree structure and the 
+		/// linked list structure.
+		/// </summary>
 		private void SwitchChildNodes(TreeNode parent)
 		{
-			TreeNode start	= parent.Left.Prev;
-			TreeNode end	= parent.Right.Next;
-			TreeNode temp	= parent.Left;
-
+			//
 			// Switch childs nodes in tree
-			parent.Left = parent.Right;
-			parent.Right = temp;
+			//
+			TreeNode temp		= parent.Left;
+			parent.Left			= parent.Right;
+			parent.Right		= temp;
+
 
 			//
-			// Re-arrange nodes in Linked list
+			// Re-arrange nodes in linked list
 			//
+			TreeNode start		= parent.Left.Prev;
+			TreeNode end		= parent.Right.Next;
 
-			// Connect starting node to left node
-			start.Next = parent.Left;
-			parent.Left.Prev = start;
+			// Connect starting and left nodes together
+			start.Next			= parent.Left;
+			parent.Left.Prev	= start;
 
-			// Connect left node to right node
-			parent.Left.Next = parent.Right;
-			parent.Right.Prev = parent.Left;
+			// Connect left and right nodes together
+			parent.Left.Next	= parent.Right;
+			parent.Right.Prev	= parent.Left;
 
-			// Connect right node to ending node
-			parent.Right.Next = end;
-			end.Prev = parent.Right;
+			// Connect right and ending nodes together
+			parent.Right.Next	= end;
+			end.Prev			= parent.Right;
 		}
 
 		private void BalanceTree()
