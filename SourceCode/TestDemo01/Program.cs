@@ -11,9 +11,6 @@ namespace TestDemo01
 	{
 		static void Main(string[] args)
 		{
-			byte[] charBytes = Encoding.Unicode.GetBytes(new char[] { 'd' });
-			BitArray bitArray = new BitArray(charBytes);
-
 		}
 	}
 }

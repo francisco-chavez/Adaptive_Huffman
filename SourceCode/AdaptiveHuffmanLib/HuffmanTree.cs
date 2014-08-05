@@ -50,6 +50,11 @@ namespace Unv.AdaptiveHuffmanLib
 
 
 		#region Methods
+		/// <summary>
+		/// This method will insert a 16-bit Unicode character into an adaptive 
+		/// Huffman Tree and the encoded character as a BitArray. As more characters 
+		/// are inserted, the BitArrays will start to get shorter (on average).
+		/// </summary>
 		public BitArray InsertCharacter(char character)
 		{
 			TreeNode	characterNode	= FindCharacterNode(character);
@@ -57,7 +62,8 @@ namespace Unv.AdaptiveHuffmanLib
 
 			UpdateTree(characterNode, character);
 
-			throw new NotImplementedException();
+			BitArray result = new BitArray(encodedBits);
+			return result;
 		}
 
 		/// <summary>
@@ -101,7 +107,7 @@ namespace Unv.AdaptiveHuffmanLib
 		/// array. The character will use Unicode with a little indian bit 
 		/// arrangment.
 		/// </summary>
-		private bool[] GetCharacterBits(TreeNode characterNode, char character)
+		private bool[] GetCharacterBits(TreeNode characterNode, char character, bool encodeCharacter = true)
 		{
 			List<bool> bits = new List<bool>();
 
@@ -124,7 +130,7 @@ namespace Unv.AdaptiveHuffmanLib
 
 			// If the character isn't in the tree yet, we'll use the character's 
 			// actual bit pattern to finish off the rest of the bit path.
-			if (characterNode.IsEmpty)
+			if (characterNode.IsEmpty && encodeCharacter)
 			{
 				byte[] charBytes = Encoding.Unicode.GetBytes(new char[] { character });
 				BitArray bitArray = new BitArray(charBytes);
@@ -350,6 +356,64 @@ namespace Unv.AdaptiveHuffmanLib
 			// Connect right and ending nodes together
 			parent.Right.Next	= end;
 			end.Prev			= parent.Right;
+		}
+
+		/// <summary>
+		/// This method returns an array of strings with the current character, 
+		/// frequency, and path of the leaf nodes that make up the tree.
+		/// </summary>
+		public string[] GetTestReadout()
+		{
+			List<string> info = new List<string>();
+
+			TreeNode currentNode = _head.Next;
+
+			while (currentNode != _tail)
+			{
+				if (currentNode.IsLeaf)
+				{
+					//
+					// Get the node's character data
+					//
+					info.Add("Leaf Node:");
+					if (currentNode.IsEmpty)
+						info.Add("Empty Node");
+					else
+						info.Add(string.Format("Character Node: {0}", currentNode.Character));
+
+
+					//
+					// Get the Node's weight value
+					//
+					info.Add(string.Format("Character Frequency: {0}", currentNode.Frequency));
+
+					//
+					// Get the node's path data
+					//
+
+					// We just want the path of the given node, but we don't want to 
+					// encode the character data if it happens to be the Empty Node.
+					bool[] bitPath = GetCharacterBits(currentNode, 'a', false);
+
+					// Convert the the path into a string that is more easily read by 
+					// humans
+					StringBuilder b = new StringBuilder();
+					b.Append("Node Path: ");
+					for (int i = 0; i < bitPath.Length; i++)
+						b.Append(bitPath[i] ? 'R' : 'L');
+
+					info.Add(b.ToString());
+
+					//
+					// Add a empty line for readability
+					//
+					info.Add(string.Empty);
+				}
+
+				currentNode = currentNode.Next;
+			}
+
+			return info.ToArray();
 		}
 		#endregion
 
