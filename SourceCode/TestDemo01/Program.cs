@@ -23,7 +23,8 @@ namespace TestDemo01
 
 			for (int i = 0; i < testInput.Length; i++)
 			{
-				encodedCharacter = tree.InsertCharacter(testInput[i]);
+				char inputCharacter = testInput[i];
+				encodedCharacter = tree.InsertCharacter(inputCharacter);
 				treeInfo = tree.GetTestReadout();
 			}
 		}

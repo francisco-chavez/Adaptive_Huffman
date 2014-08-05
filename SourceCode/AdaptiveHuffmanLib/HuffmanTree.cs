@@ -238,7 +238,6 @@ namespace Unv.AdaptiveHuffmanLib
 
 			// Insert the character data into the new character node.
 			newBranch.Right.Character	= character;
-			newBranch.Right.Frequency	= 1;
 
 			// Point the head node and the empty node to eachother.
 			_head.Next					= newBranch.Left;
