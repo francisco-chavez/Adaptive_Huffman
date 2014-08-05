@@ -40,6 +40,11 @@ namespace Unv.AdaptiveHuffmanLib
 
 			_tail.Prev = _root;
 			_root.Prev = _head;
+
+			// This node is always the node at the end of the list. This will stop 
+			// the consitancy checking method for the tree's balance from trying to 
+			// switch it with other nodes in the list.
+			_tail.Frequency = int.MaxValue;
 		}
 		#endregion
 
@@ -132,12 +137,38 @@ namespace Unv.AdaptiveHuffmanLib
 
 		private void UpdateTree(TreeNode characterNode, char character)
 		{
+			// Update or insert the tree's character data.
 			if (characterNode.IsEmpty)
 				characterNode = AddCharacterNode(character);
 			else
 				characterNode.Frequency++;
 
 			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// The linked list portion of the TreeNodes are required to either increase 
+		/// or hold the same frequency when it comes to itterating through the list. 
+		/// This means that the relationships of sibling nodes are required to hold 
+		/// certain relationships in their property values for the tree to remain 
+		/// properly balanced. This method will tell us if those relationship 
+		/// requirments are being held to for the given node.
+		/// </summary>
+		private bool SiblingPropertiesHold(TreeNode node)
+		{
+			if (node == _root)
+				return true;
+
+			if (node.Next == _root)
+				return true;
+
+			// If the next node is the list isn't this node's parent then that node 
+			// better have frequency that is equal to or heigher than this node's 
+			// frequency.
+			if (node.Next != node.Parent)
+				return node.Frequency <= node.Next.Frequency;
+
+			return node.Frequency <= node.Next.Next.Frequency;
 		}
 
 		public bool ContainsCharacter(char character)
