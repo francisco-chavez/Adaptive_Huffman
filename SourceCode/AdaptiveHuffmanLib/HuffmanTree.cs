@@ -351,11 +351,6 @@ namespace Unv.AdaptiveHuffmanLib
 			parent.Right.Next	= end;
 			end.Prev			= parent.Right;
 		}
-
-		private void BalanceTree()
-		{
-			throw new NotImplementedException();
-		}
 		#endregion
 
 
