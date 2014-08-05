@@ -341,8 +341,8 @@ namespace Unv.AdaptiveHuffmanLib
 			//
 			// Re-arrange nodes in linked list
 			//
-			TreeNode start		= parent.Left.Prev;
-			TreeNode end		= parent.Right.Next;
+			TreeNode start		= parent.Right.Prev;
+			TreeNode end		= parent.Left.Next;
 
 			// Connect starting and left nodes together
 			start.Next			= parent.Left;
