@@ -143,7 +143,19 @@ namespace Unv.AdaptiveHuffmanLib
 			else
 				characterNode.Frequency++;
 
-			throw new NotImplementedException();
+			TreeNode nodeToUpdate = characterNode.Parent;
+
+			while (nodeToUpdate != null)
+			{
+				nodeToUpdate.Frequency = nodeToUpdate.Left.Frequency + nodeToUpdate.Right.Frequency;
+
+				if (!SiblingPropertiesHold(nodeToUpdate))
+				{
+					// restore the sibling properties of the nodes by switching them around
+				}
+
+				nodeToUpdate = nodeToUpdate.Parent;
+			}
 		}
 
 		/// <summary>
@@ -169,6 +181,27 @@ namespace Unv.AdaptiveHuffmanLib
 				return node.Frequency <= node.Next.Frequency;
 
 			return node.Frequency <= node.Next.Next.Frequency;
+		}
+
+		/// <summary>
+		/// Find the TreeNode to switch with that will restore the proper tree 
+		/// balence at this startingNode's level of the HuffmanTree.
+		/// </summary>
+		private TreeNode FindNodeToSwitchWith(TreeNode startingNode)
+		{
+			TreeNode nextNode = startingNode;
+
+			do
+			{
+				nextNode = nextNode.Next;
+			} while (nextNode.Frequency < startingNode.Frequency);
+
+			nextNode = nextNode.Prev;
+
+			if (nextNode == startingNode.Parent)
+				nextNode = nextNode.Prev;
+
+			return nextNode;
 		}
 
 		public bool ContainsCharacter(char character)
