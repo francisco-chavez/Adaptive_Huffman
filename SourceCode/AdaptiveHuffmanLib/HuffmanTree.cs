@@ -444,6 +444,12 @@ namespace Unv.AdaptiveHuffmanLib
 
 		private class TreeNode
 		{
+			#region Attributes
+			private bool m_characterHasBeenSet = false;
+			private char m_character;
+			#endregion
+
+
 			#region Properties
 			public TreeNode Next		{ get; set; }
 			public TreeNode Prev		{ get; set; }
@@ -455,15 +461,25 @@ namespace Unv.AdaptiveHuffmanLib
 			public bool		IsLeaf		{ get { return Right == null && Left == null; } }
 
 			public int		Frequency	{ get; set; }
-			public bool		IsEmpty		{ get { return IsLeaf && Frequency == 0; } }
+			public bool		IsEmpty		{ get { return IsLeaf && !m_characterHasBeenSet; } }
 
-			public char		Character	{ get; set; }
+			public char Character
+			{
+				get { return m_character; }
+				set
+				{
+					m_character = value;
+					m_characterHasBeenSet = true;
+				}
+			}
 			#endregion
 
 
 			#region Constructors
 			public TreeNode()
 			{
+				this.m_characterHasBeenSet = false;
+
 				this.Frequency	= 0;
 				this.Left		= null;
 				this.Next		= null;

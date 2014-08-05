@@ -25,7 +25,7 @@ namespace TestDemo01
 			{
 				char inputCharacter = testInput[i];
 				encodedCharacter = tree.InsertCharacter(inputCharacter);
-				treeInfo = tree.GetTestReadout();
+				treeInfo = tree.GetTestReadout(true);
 			}
 		}
 	}
