@@ -50,6 +50,7 @@ namespace Unv.AdaptiveHuffmanLib
 			TreeNode	characterNode	= FindCharacterNode(character);
 			bool[]		encodedBits		= GetCharacterBits(characterNode, character);
 
+			UpdateTree(characterNode, character);
 
 			throw new NotImplementedException();
 		}
@@ -129,6 +130,16 @@ namespace Unv.AdaptiveHuffmanLib
 			return bits.ToArray();
 		}
 
+		private void UpdateTree(TreeNode characterNode, char character)
+		{
+			if (characterNode.IsEmpty)
+				characterNode = AddCharacterNode(character);
+			else
+				characterNode.Frequency++;
+
+			throw new NotImplementedException();
+		}
+
 		public bool ContainsCharacter(char character)
 		{
 			// The most frequent character is going to be  towards
@@ -157,51 +168,46 @@ namespace Unv.AdaptiveHuffmanLib
 			return result;
 		}
 
-		private void AddCharacter(char character)
+		/// <summary>
+		/// This method will create and return a new TreeNode for the given 
+		/// character.
+		/// </summary>
+		/// <remarks>
+		/// If there's a TreeNode for the character already present in the tree, it 
+		/// will still create a new TreeNode for the character.
+		/// </remarks>
+		private TreeNode AddCharacterNode(char character)
 		{
-			// The empty node will become a branch node, so the
-			// temp reference we're using is called newBranch.
-			// Besides, the left child of the newBranch will become
-			// the empty node.
+			// The empty node will become a branch node, so the temp reference we're 
+			// using is called newBranch. Besides, the left child of the newBranch 
+			// will become the empty node.
 			TreeNode newBranch = EmptyNode;
 			newBranch.Left	= new TreeNode();
 			newBranch.Right = new TreeNode();
 
-			newBranch.Left.Parent			= newBranch;
-			newBranch.Right.Right		= newBranch;
+			// Point the children back to their parent
+			newBranch.Left.Parent		= newBranch;
+			newBranch.Right.Parent		= newBranch;
 
+			// Insert the character data into the new character node.
 			newBranch.Right.Character	= character;
 			newBranch.Right.Frequency	= 1;
 
-			newBranch.Left.Next			= newBranch.Right;
-			newBranch.Left.Prev			= newBranch.Prev;
+			// Point the head node and the empty node to eachother.
+			_head.Next					= newBranch.Left;
+			newBranch.Left.Prev			= _head;
 
-			newBranch.Right.Next		= newBranch;
+			// Point the left and right nodes to eachother.
+			newBranch.Left.Next			= newBranch.Right;
 			newBranch.Right.Prev		= newBranch.Left;
 
-			newBranch.Prev	= newBranch.Right;
+			// Point the right node and parent node to eachother.
+			newBranch.Right.Next		= newBranch;
+			newBranch.Prev				= newBranch.Right;
 
-			TreeNode parent = newBranch;
-			while (parent != null)
-			{
-				parent.Frequency = parent.Left.Frequency + parent.Right.Frequency;
-				parent = parent.Parent;
-			}
-		}
 
-		private void IncreamentCharacter(char character)
-		{
-			TreeNode currentNode = _tail.Prev;
-
-			while (true)
-			{
-				if (currentNode.IsLeaf && currentNode.Character == character)
-					break;
-
-				currentNode = currentNode.Prev;
-			}
-
-			currentNode.Frequency++;
+			// Return the new character node
+			return newBranch.Right;
 		}
 
 		private void SwitchChildNodes(TreeNode parent)
