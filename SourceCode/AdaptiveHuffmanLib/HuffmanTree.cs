@@ -200,19 +200,17 @@ namespace Unv.AdaptiveHuffmanLib
 		/// </summary>
 		private TreeNode FindNodeToSwitchWith(TreeNode startingNode)
 		{
-			TreeNode nextNode = startingNode;
+			TreeNode targetNode = startingNode.Next;
 
-			do
-			{
-				nextNode = nextNode.Next;
-			} while (nextNode.Frequency < startingNode.Frequency);
+			while (startingNode.Frequency > targetNode.Frequency)
+				targetNode = targetNode.Next;
 
-			nextNode = nextNode.Prev;
+			targetNode = targetNode.Prev;
 
-			if (nextNode == startingNode.Parent)
-				nextNode = nextNode.Prev;
+			if (startingNode.Parent == targetNode)
+				targetNode = targetNode.Prev;
 
-			return nextNode;
+			return targetNode;
 		}
 
 		/// <summary>
@@ -225,6 +223,10 @@ namespace Unv.AdaptiveHuffmanLib
 		/// </remarks>
 		private TreeNode AddCharacterNode(char character)
 		{
+			///
+			/// Insert data into tree structure
+			/// 
+
 			// The empty node will become a branch node, so the temp reference we're 
 			// using is called newBranch. Besides, the left child of the newBranch 
 			// will become the empty node.
@@ -239,9 +241,12 @@ namespace Unv.AdaptiveHuffmanLib
 			// Insert the character data into the new character node.
 			newBranch.Right.Character	= character;
 
+			///
+			/// Insert data into linked list
+			/// 
 			// Point the head node and the empty node to eachother.
 			_head.Next					= newBranch.Left;
-			newBranch.Left.Prev			= _head;
+			_head.Next.Prev				= _head;
 
 			// Point the left and right nodes to eachother.
 			newBranch.Left.Next			= newBranch.Right;
@@ -415,12 +420,17 @@ namespace Unv.AdaptiveHuffmanLib
 		private class TreeNode
 		{
 			#region Attributes
-			private bool m_characterHasBeenSet = false;
-			private char m_character;
+			private			bool	_characterHasBeenSet = false;
+			private			char	_character;
+
+			private static	ushort NextID = 0;
+			private			ushort _id;
 			#endregion
 
 
 			#region Properties
+			public ushort	NodeID		{ get { return _id; } }
+
 			public TreeNode Next		{ get; set; }
 			public TreeNode Prev		{ get; set; }
 
@@ -431,15 +441,15 @@ namespace Unv.AdaptiveHuffmanLib
 			public bool		IsLeaf		{ get { return Right == null && Left == null; } }
 
 			public int		Frequency	{ get; set; }
-			public bool		IsEmpty		{ get { return IsLeaf && !m_characterHasBeenSet; } }
+			public bool		IsEmpty		{ get { return IsLeaf && !_characterHasBeenSet; } }
 
 			public char Character
 			{
-				get { return m_character; }
+				get { return _character; }
 				set
 				{
-					m_character = value;
-					m_characterHasBeenSet = true;
+					_character = value;
+					_characterHasBeenSet = true;
 				}
 			}
 			#endregion
@@ -448,7 +458,9 @@ namespace Unv.AdaptiveHuffmanLib
 			#region Constructors
 			public TreeNode()
 			{
-				this.m_characterHasBeenSet = false;
+				this._id = NextID++;
+
+				this._characterHasBeenSet = false;
 
 				this.Frequency	= 0;
 				this.Left		= null;
