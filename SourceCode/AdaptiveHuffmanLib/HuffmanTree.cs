@@ -349,6 +349,7 @@ namespace Unv.AdaptiveHuffmanLib
 					//
 					// Get the node's character data
 					//
+					info.Add(string.Format("ID: {0}", currentNode.NodeID));
 					info.Add("Leaf Node:");
 					if (currentNode.IsEmpty)
 						info.Add("Empty Node");
@@ -385,6 +386,8 @@ namespace Unv.AdaptiveHuffmanLib
 				}
 				else if (includeBranches)
 				{
+					info.Add(string.Format("ID: {0}", currentNode.NodeID));
+
 					info.Add("Branch Node:");
 					info.Add(string.Format("Frequency: {0}", currentNode.Frequency));
 
