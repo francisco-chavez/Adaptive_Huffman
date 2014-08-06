@@ -267,25 +267,48 @@ namespace Unv.AdaptiveHuffmanLib
 		/// </remarks>
 		private void SwitchNodePositions(TreeNode a, TreeNode b)
 		{
-			if (a.Parent == b.Parent)
+			/// 
+			/// Switch nodes within tree structure
+			/// 
 			{
-				SwitchChildNodes(a.Parent);
+				TreeNode aParent = a.Parent;
+				TreeNode bParent = b.Parent;
+
+				if (aParent == bParent)
+				{
+					aParent.Left = b;
+					aParent.Right = a;
+				}
+				else
+				{
+					if (aParent.Left == a)
+						aParent.Left = b;
+					else
+						aParent.Left = b;
+
+					if (bParent.Left == b)
+						bParent.Left = a;
+					else
+						bParent.Right = a;
+
+					a.Parent = bParent;
+					b.Parent = aParent;
+				}
 			}
-			else
+
+			///
+			/// Switch nodes within linked list structure
+			/// 
 			{
-				//
-				// Switch nodes within linked list
-				//
 				TreeNode aPrevious	= a.Prev;
 				TreeNode aNext		= a.Next;
-
 				TreeNode bPrevious	= b.Prev;
 				TreeNode bNext		= b.Next;
 
 				aPrevious.Next = b;
 				b.Prev = aPrevious;
 
-				if (aNext == b)
+				if (a.Next == b)
 				{
 					b.Next = a;
 					a.Prev = b;
@@ -295,66 +318,13 @@ namespace Unv.AdaptiveHuffmanLib
 					b.Next = aNext;
 					aNext.Prev = b;
 
-					a.Prev = bPrevious;
 					bPrevious.Next = a;
+					a.Prev = bPrevious;
 				}
 
 				a.Next = bNext;
 				bNext.Prev = a;
-
-				//
-				// Switch nodes within tree
-				//
-				TreeNode aParent = a.Parent;
-				TreeNode bParent = b.Parent;
-
-				if (aParent.Left == a)
-					aParent.Left = b;
-				else
-					aParent.Right = b;
-
-				if (bParent.Left == b)
-					bParent.Left = a;
-				else
-					bParent.Right = b;
-
-				b.Parent = aParent;
-				a.Parent = bParent;
 			}
-		}
-
-		/// <summary>
-		/// Switches the positions of the two child nodes of the given parent node. 
-		/// This switch will applied to their positions in the tree structure and the 
-		/// linked list structure.
-		/// </summary>
-		private void SwitchChildNodes(TreeNode parent)
-		{
-			//
-			// Switch childs nodes in tree
-			//
-			TreeNode temp		= parent.Left;
-			parent.Left			= parent.Right;
-			parent.Right		= temp;
-
-
-			//
-			// Re-arrange nodes in linked list
-			//
-			TreeNode start		= parent.Right.Prev;
-			TreeNode end		= parent.Left.Next;
-
-			// Connect starting and left nodes together
-			start.Next			= parent.Left;
-			parent.Left.Prev	= start;
-
-			// Connect left and right nodes together
-			parent.Left.Next	= parent.Right;
-			parent.Right.Prev	= parent.Left;
-
-			// Connect right and ending nodes together
-			parent.Right.Next	= end;
-			end.Prev			= parent.Right;
 		}
 
 		/// <summary>
