@@ -289,7 +289,7 @@ namespace Unv.AdaptiveHuffmanLib
 					if (aParent.Left == a)
 						aParent.Left = b;
 					else
-						aParent.Left = b;
+						aParent.Right = b;
 
 					if (bParent.Left == b)
 						bParent.Left = a;
