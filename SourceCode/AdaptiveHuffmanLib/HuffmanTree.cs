@@ -11,9 +11,11 @@ namespace Unv.AdaptiveHuffmanLib
 	public class HuffmanTree
 	{
 		#region Attributes
-		private TreeNode _root = null;
-		private TreeNode _head = null;
-		private TreeNode _tail = null;
+		private TreeNode _root					= null;
+		private TreeNode _head					= null;
+		private TreeNode _tail					= null;
+
+		private TreeNode _currentDecodePosition = null;
 		#endregion
 
 
@@ -472,20 +474,6 @@ namespace Unv.AdaptiveHuffmanLib
 
 				this.Right		= null;
 				this.Parent		= null;
-			}
-			#endregion
-
-
-			#region Methods
-			public void UpdateFrequency()
-			{
-				if (!IsLeaf)
-				{
-					Left.UpdateFrequency();
-					Right.UpdateFrequency();
-
-					Frequency = Left.Frequency + Right.Frequency;
-				}
 			}
 			#endregion
 		}
