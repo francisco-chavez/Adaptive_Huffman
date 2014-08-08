@@ -34,60 +34,77 @@ namespace Unv.AdaptiveHuffmanLib
 		#region Constructors
 		public HuffmanTree()
 		{
-			_head = new TreeNode();
-			_tail = new TreeNode();
-			_root = new TreeNode();
-
-			_head.Next = _root;
-			_root.Next = _tail;
-
-			_tail.Prev = _root;
-			_root.Prev = _head;
-
-			// This node is always the node at the end of the list. This will keep
-			// it constistant with the rules of the linked list.
-			_tail.Frequency = int.MaxValue;
-
-			_currentDecodePosition = _root;
+			InitializeHuffTree();
 		}
 		#endregion
 
 
 		#region Methods
 		/// <summary>
-		/// This method will insert a 16-bit Unicode character into an adaptive 
-		/// Huffman Tree and the encoded character as a BitArray. As more characters 
-		/// are inserted, the BitArrays will start to get shorter (on average).
+		/// This method will insert a 16-bit Unicode character into an Adaptive Huffman 
+		/// Tree and the encoded character as a BitArray. As more characters are 
+		/// inserted, the BitArrays will start to get shorter (on average).
 		/// </summary>
 		public BitArray EncodeCharacter(char character)
 		{
+			// Encoding a character is a two part process.
+
+			// 1. Get the bit code for the character based on the tree's current state.
 			TreeNode	characterNode	= FindCharacterNode(character);
 			bool[]		encodedBits		= GetCharacterBits(characterNode, character);
 
+			// 2. Update the state of the tree by increaseing the character's frequency,
+			//	  while keeping it balanced.
 			UpdateTree(characterNode, character);
 
 			BitArray result = new BitArray(encodedBits);
 			return result;
 		}
 
+		/// <summary>
+		/// This method will create 16-bit Unicode characters from an Adaptive Huffman 
+		/// Tree. As characters are decoded the tree's state will be updated so that the
+		/// more frequently decoded characters will have shorter shorter bit sequences. 
+		/// When given an incomplete sequence, the decoding will continue from where it 
+		/// left off on the next bit sequence.
+		/// </summary>
 		public char[] DecodeCharacters(bool[] bits)
 		{
 			var	charactersFound = new List<char>();
 			var	bitIndex		= 0;
 
+			///
+			/// We are going to loop through the entire bit sequence that was given in 
+			/// bits. Due to the changing nature of the Huffman Tree, it was just easier 
+			/// for me to build this method with a forever loop. That being said, it can 
+			/// be altered into a regular for loop and broken down into smaller methods.
+			/// -FCT
+			/// 
 			while(true)
 			{
+				// We are already as far down the tree as we can get.
 				if (_currentDecodePosition.IsLeaf)
 				{
+					// We are looking at the Empty Node. This means that this is the 
+					// first use of the character we are about to decode. We will 
+					// require 16 bits using little indian bit arrangement to get a 
+					// Unicode16 character.
 					if (_currentDecodePosition.IsEmpty)
 					{
 						int charSize = UnicodeEncoding.CharSize * 8;
 
+						// Using any leftover bits from the last decode command (if 
+						// there are any), we will continue looking for bits untill we 
+						// have enough to form a single character.
 						for (int i = 0; _leftOverBits.Count < charSize && bitIndex < bits.Length; i++, bitIndex++)
 						{
 							_leftOverBits.Add(bits[bitIndex]);
 						}
 
+						// If we have enough bits to get a single character, the get 
+						// that character. Update the tree so that it now contains a 
+						// character node of its own, add the character to the results 
+						// of this decode pass, and reposition to the tree's root node.
 						if (_leftOverBits.Count == charSize)
 						{
 							BitArray unicodeBits = new BitArray(_leftOverBits.ToArray());
@@ -100,11 +117,17 @@ namespace Unv.AdaptiveHuffmanLib
 							UpdateTree(_currentDecodePosition, newChar);
 							_currentDecodePosition = _root;
 						}
+						// There weren't enough bits to decode a character. We will 
+						// continue from where left off on the next call to decode.
 						else
 						{
 							break;
 						}
 					}
+					// We are looking at a leaf node containing a character that has 
+					// been decoded before. Get what we can from the node, update the 
+					// tree, move back to the top of the tree to start decoding the next 
+					// character.
 					else
 					{
 						charactersFound.Add(_currentDecodePosition.Character);
@@ -112,45 +135,53 @@ namespace Unv.AdaptiveHuffmanLib
 						_currentDecodePosition = _root;
 					}
 				}
+				// We are currently looking at a branch, and there are bit left for use 
+				// to decode with. Use the next bit to move down one level of the tree.
+				// 
 				else if (bitIndex < bits.Length)
 				{
 					_currentDecodePosition = bits[bitIndex] ? _currentDecodePosition.Right : _currentDecodePosition.Left;
 					bitIndex++;
 				}
+				// We are currently looking at a branch, and we ran out of bits to 
+				// decode with. We can't decode anything else until they give us more 
+				// bits.
 				else
 				{
 					break;
 				}
 			}
 
+			// We're out of bits to decode. Return all characters that were found in 
+			// this decode call.
 			return charactersFound.ToArray();
 		}
 
 		/// <summary>
-		/// This method returns the node for the given character in the Huffman Tree.
-		/// If the given character is not in the tree, it will return the empty node.
+		/// This method returns the node for the given character in the Huffman Tree. If 
+		/// the given character is not in the tree, it will return the empty node.
 		/// </summary>
 		private TreeNode FindCharacterNode(char character)
 		{
 			// The heigher the node's frequency, the further back is will be in the 
-			// list. So, starting at the end of the list, and moving forward will 
-			// speed things up (on average).
+			// list. So, starting at the end of the list, and moving forward will speed 
+			// things up (on average).
 			TreeNode currentNode = _tail.Prev;
 
 			while (true)
 			{
-				// The branch nodes contain a Character property and this property 
-				// is of type char; char is a struct, so it always contains a value. 
-				// This means that there is a slim chance that a branch node will 
-				// contain the character we are looking for. Because of this, we
-				// first make sure that the node is a leaf node in the tree.
+				// The branch nodes contain a Character property and this property is of 
+				// type char; char is a struct, so it always contains a value. This 
+				// means that there is a slim chance that a branch node will contain the 
+				// character we are looking for. Because of this, we first make sure 
+				// that the node is a leaf node in the tree.
 				// - FCT
 				if (currentNode.IsLeaf)
 				{
-					// The empty node has a frequency of zero; for this reason, it 
-					// will always be the first node in the linked list. If we don't 
-					// find the node for the requested character, be the time we 
-					// reach the front of the list, then it's not in the list.
+					// The empty node has a frequency of zero; for this reason, it will 
+					// always be the first node in the linked list. If we don't find the 
+					// node for the requested character, be the time we reach the front 
+					// of the list, then it's not in the list.
 					if (currentNode.IsEmpty || currentNode.Character == character)
 						return currentNode;
 				}
@@ -162,16 +193,15 @@ namespace Unv.AdaptiveHuffmanLib
 		/// <summary>
 		/// Given a TreeNode, this method will return the path to that node from the 
 		/// root. Starting from the start of the bool[], a false means go to the left 
-		/// child, and true means go to the right child. If the character node is the
-		/// empty node, the character's bit patter will be appended to the end of the
-		/// array. The character will use Unicode with a little indian bit 
-		/// arrangment.
+		/// child, and true means go to the right child. If the character node is the 
+		/// empty node, the character's bit patter will be appended to the end of the 
+		/// array. The character will use Unicode with a little indian bit arrangment.
 		/// </summary>
 		private bool[] GetCharacterBits(TreeNode characterNode, char character, bool encodeCharacter = true)
 		{
 			List<bool> bits = new List<bool>();
 
-			// Back track from the given node to the root node. We will stop when the
+			// Back track from the given node to the root node. We will stop when the 
 			// current node is the root (which has no parent).
 			TreeNode current	= characterNode;
 			TreeNode parent		= characterNode.Parent;
@@ -184,12 +214,12 @@ namespace Unv.AdaptiveHuffmanLib
 				parent	= current.Parent;
 			}
 
-			// The bits we have are going from character location to root, we need 
-			// them to go the other way.
+			// The bits we have are going from character location to root, we need them 
+			// to go the other way.
 			bits.Reverse();
 
-			// If the character isn't in the tree yet, we'll use the character's 
-			// actual bit pattern to finish off the rest of the bit path.
+			// If the character isn't in the tree yet, we'll use the character's actual 
+			// bit pattern to finish off the rest of the bit path.
 			if (characterNode.IsEmpty && encodeCharacter)
 			{
 				byte[] charBytes = Encoding.Unicode.GetBytes(new char[] { character });
@@ -476,6 +506,58 @@ namespace Unv.AdaptiveHuffmanLib
 			}
 
 			return info.ToArray();
+		}
+
+		/// <summary>
+		/// This method will resest the HuffmanTree to the point it was when first 
+		/// constructed. 
+		/// </summary>
+		/// <remarks>
+		/// The nodes in the tree will continue to increment their IDs from where 
+		/// they left off.
+		/// </remarks>
+		public void ClearTree()
+		{
+			TreeNode currentNode = _head;
+
+			while (currentNode != null)
+			{
+				if (currentNode.Prev != null)
+					currentNode.Prev.Next = null;
+
+				currentNode.Parent = null;
+				currentNode.Left = null;
+				currentNode.Right = null;
+				currentNode.Prev = null;
+
+				currentNode = currentNode.Next;
+			}
+
+			InitializeHuffTree();
+		}
+
+		/// <summary>
+		/// This method will initialize the tree and linked list structures of the 
+		/// HuffmanTree with new nodes. The only piece of data in the HuffmanTree will 
+		/// be the Empty Node.
+		/// </summary>
+		private void InitializeHuffTree()
+		{
+			_head = new TreeNode();
+			_tail = new TreeNode();
+			_root = new TreeNode();
+
+			_head.Next = _root;
+			_root.Next = _tail;
+
+			_tail.Prev = _root;
+			_root.Prev = _head;
+
+			// This node is always the node at the end of the list. This will keep it 
+			// constistant with the rules of the linked list.
+			_tail.Frequency = int.MaxValue;
+
+			_currentDecodePosition = _root;
 		}
 		#endregion
 
