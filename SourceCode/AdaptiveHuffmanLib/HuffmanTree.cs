@@ -11,11 +11,12 @@ namespace Unv.AdaptiveHuffmanLib
 	public class HuffmanTree
 	{
 		#region Attributes
-		private TreeNode _root					= null;
-		private TreeNode _head					= null;
-		private TreeNode _tail					= null;
+		private TreeNode	_root					= null;
+		private TreeNode	_head					= null;
+		private TreeNode	_tail					= null;
 
-		private TreeNode _currentDecodePosition = null;
+		private TreeNode	_currentDecodePosition	= null;
+		private List<bool> _bits					= new List<bool>(8);
 		#endregion
 
 
@@ -43,10 +44,11 @@ namespace Unv.AdaptiveHuffmanLib
 			_tail.Prev = _root;
 			_root.Prev = _head;
 
-			// This node is always the node at the end of the list. This will stop 
-			// the consitancy checking method for the tree's balance from trying to 
-			// switch it with other nodes in the list.
+			// This node is always the node at the end of the list. This will keep
+			// it constistant with the rules of the linked list.
 			_tail.Frequency = int.MaxValue;
+
+			_currentDecodePosition = _root;
 		}
 		#endregion
 
@@ -57,7 +59,7 @@ namespace Unv.AdaptiveHuffmanLib
 		/// Huffman Tree and the encoded character as a BitArray. As more characters 
 		/// are inserted, the BitArrays will start to get shorter (on average).
 		/// </summary>
-		public BitArray InsertCharacter(char character)
+		public BitArray EncodeCharacter(char character)
 		{
 			TreeNode	characterNode	= FindCharacterNode(character);
 			bool[]		encodedBits		= GetCharacterBits(characterNode, character);
@@ -66,6 +68,11 @@ namespace Unv.AdaptiveHuffmanLib
 
 			BitArray result = new BitArray(encodedBits);
 			return result;
+		}
+
+		public char[] DecodeCharacters(bool[] bits)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <summary>

@@ -14,25 +14,37 @@ namespace TestDemo01
 	{
 		static void Main(string[] args)
 		{
-			HuffmanTree tree = new HuffmanTree();
 			string testInput = "mississippi river";
 			testInput = testInput + "   " + testInput;
-			BitArray encodedCharacter;
-			string[] treeInfo;
 
-			treeInfo = tree.GetTestReadout();
-			List<bool> encodedTestInput = new List<bool>();
+
+			//HuffmanTree tree = new HuffmanTree();
+			//string[] treeInfo;
+
+			//treeInfo = tree.GetTestReadout();
+			//List<bool> encodedTestInput = new List<bool>();
+
+			//for (int i = 0; i < testInput.Length; i++)
+			//{
+			//	char		inputCharacter		= testInput[i];
+			//	BitArray	encodedCharacter	= tree.EncodeCharacter(inputCharacter);
+			//	treeInfo = tree.GetTestReadout(true);
+
+			//	Console.WriteLine("{0}: {1}", inputCharacter, ReadableBits(encodedCharacter));
+
+			//	for (int j = 0; j < encodedCharacter.Length; j++)
+			//		encodedTestInput.Add(encodedCharacter[j]);
+			//}
+
+			HuffmanTree encodeTree1 = new HuffmanTree();
+			HuffmanTree decodeTree1 = new HuffmanTree();
 
 			for (int i = 0; i < testInput.Length; i++)
 			{
-				char inputCharacter = testInput[i];
-				encodedCharacter = tree.InsertCharacter(inputCharacter);
-				treeInfo = tree.GetTestReadout(true);
-
-				Console.WriteLine("{0}: {1}", inputCharacter, ReadableBits(encodedCharacter));
-
-				for (int j = 0; j < encodedCharacter.Length; j++)
-					encodedTestInput.Add(encodedCharacter[j]);
+				char		inputCharacter		= testInput[i];
+				BitArray	encodedCharacter	= encodeTree1.EncodeCharacter(inputCharacter);
+				bool[]		encodedBits			= Enumerable.Range(0, encodedCharacter.Length).Select(j => { return encodedCharacter[j]; }).ToArray();
+				char		decodedCharacter	= decodeTree1.DecodeCharacters(encodedBits)[0];
 			}
 		}
 
