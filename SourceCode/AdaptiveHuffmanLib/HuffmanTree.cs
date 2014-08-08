@@ -16,7 +16,7 @@ namespace Unv.AdaptiveHuffmanLib
 		private TreeNode	_tail					= null;
 
 		private TreeNode	_currentDecodePosition	= null;
-		private List<bool> _bits					= new List<bool>(8);
+		private List<bool>	_leftOverBits			= new List<bool>(8);
 		#endregion
 
 
@@ -72,7 +72,58 @@ namespace Unv.AdaptiveHuffmanLib
 
 		public char[] DecodeCharacters(bool[] bits)
 		{
-			throw new NotImplementedException();
+			var	charactersFound = new List<char>();
+			var	bitIndex		= 0;
+
+			while(true)
+			{
+				if (_currentDecodePosition.IsLeaf)
+				{
+					if (_currentDecodePosition.IsEmpty)
+					{
+						int charSize = UnicodeEncoding.CharSize * 8;
+
+						for (int i = 0; _leftOverBits.Count < charSize && bitIndex < bits.Length; i++, bitIndex++)
+						{
+							_leftOverBits.Add(bits[bitIndex]);
+						}
+
+						if (_leftOverBits.Count == charSize)
+						{
+							BitArray unicodeBits = new BitArray(_leftOverBits.ToArray());
+							byte[] unicodeBytes = new byte[2];
+							unicodeBits.CopyTo(unicodeBytes, 0);
+							
+							char newChar = Encoding.Unicode.GetChars(unicodeBytes)[0];
+							charactersFound.Add(newChar);
+							_leftOverBits.Clear();
+							UpdateTree(_currentDecodePosition, newChar);
+							_currentDecodePosition = _root;
+						}
+						else
+						{
+							break;
+						}
+					}
+					else
+					{
+						charactersFound.Add(_currentDecodePosition.Character);
+						UpdateTree(_currentDecodePosition, _currentDecodePosition.Character);
+						_currentDecodePosition = _root;
+					}
+				}
+				else if (bitIndex < bits.Length)
+				{
+					_currentDecodePosition = bits[bitIndex] ? _currentDecodePosition.Right : _currentDecodePosition.Left;
+					bitIndex++;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			return charactersFound.ToArray();
 		}
 
 		/// <summary>
