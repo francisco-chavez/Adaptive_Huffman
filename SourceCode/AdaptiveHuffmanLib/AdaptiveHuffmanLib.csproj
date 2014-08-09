@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdaptiveHuffmanDecoder.cs" />
+    <Compile Include="AdaptiveHuffmanEncoder.cs" />
     <Compile Include="HuffmanTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

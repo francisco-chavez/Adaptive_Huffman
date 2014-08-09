@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Unv.AdaptiveHuffmanLib
 {
-	public class HuffmanTree
+	internal class HuffmanTree
 	{
 		#region Attributes
 		private TreeNode	_root					= null;

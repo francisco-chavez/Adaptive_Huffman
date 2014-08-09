@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace TestDemo01
 		{
 			string testInput = "mississippi river";
 			testInput = testInput + "   " + testInput;
+
 
 
 			//HuffmanTree tree = new HuffmanTree();
@@ -36,29 +38,29 @@ namespace TestDemo01
 			//		encodedTestInput.Add(encodedCharacter[j]);
 			//}
 
-			HuffmanTree		encodeTree1				= new HuffmanTree();
-			HuffmanTree		decodeTree1				= new HuffmanTree();
-			StringBuilder	decodedStringBuilder	= new StringBuilder();
+			//HuffmanTree		encodeTree1				= new HuffmanTree();
+			//HuffmanTree		decodeTree1				= new HuffmanTree();
+			//StringBuilder	decodedStringBuilder	= new StringBuilder();
 
-			for (int i = 0; i < testInput.Length; i++)
-			{
-				char		inputCharacter		= testInput[i];
-				BitArray	encodedCharacter	= encodeTree1.EncodeCharacter(inputCharacter);
-				bool[]		encodedBits			= Enumerable.Range(0, encodedCharacter.Length).Select(j => { return encodedCharacter[j]; }).ToArray();
-				char		characterFound		= decodeTree1.DecodeCharacters(encodedBits)[0];
-				decodedStringBuilder.Append(characterFound);
-			}
+			//for (int i = 0; i < testInput.Length; i++)
+			//{
+			//	char		inputCharacter		= testInput[i];
+			//	BitArray	encodedCharacter	= encodeTree1.EncodeCharacter(inputCharacter);
+			//	bool[]		encodedBits			= Enumerable.Range(0, encodedCharacter.Length).Select(j => { return encodedCharacter[j]; }).ToArray();
+			//	char		characterFound		= decodeTree1.DecodeCharacters(encodedBits)[0];
+			//	decodedStringBuilder.Append(characterFound);
+			//}
 
-			string decodedTestString = decodedStringBuilder.ToString();
+			//string decodedTestString = decodedStringBuilder.ToString();
 
-			if (testInput == decodedTestString)
-			{
-				Console.WriteLine("It works");
-			}
-			else
-			{
-				Console.WriteLine("Keep working at it.");
-			}
+			//if (testInput == decodedTestString)
+			//{
+			//	Console.WriteLine("It works");
+			//}
+			//else
+			//{
+			//	Console.WriteLine("Keep working at it.");
+			//}
 		}
 
 		static string ReadableBits(BitArray bitArray)
