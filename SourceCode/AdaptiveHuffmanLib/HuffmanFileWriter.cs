@@ -70,6 +70,11 @@ namespace Unv.AdaptiveHuffmanLib
 		/// </summary>
 		public string EOF { get { return EOF_CHARACTER.ToString(); } }
 
+		/// <summary>
+		/// Gets or sets the number of bytes that should be used held in the buffer.
+		/// When the buffer starts holding a number of bytes that is greater than this
+		/// amount, the buffer will flush any complete bytes into the output stream.
+		/// </summary>
 		public int PreferedBufferSize
 		{
 			get { return n_preferedBufferSize; }
@@ -80,9 +85,13 @@ namespace Unv.AdaptiveHuffmanLib
 
 				n_preferedBufferSize = value;
 
+				// 1 is the smallest buffer size I'll allow.
 				if (value < 1)
-					n_preferedBufferSize = DEFAULT_PREFERED_BUFFER_SIZE;
+					n_preferedBufferSize = 1;
 
+				// If the wanted buffer size was reduced, then we might
+				// have more data in it than what the user wants us to
+				// have.
 				if (ShouldFlush)
 					Flush();
 			}
@@ -104,44 +113,77 @@ namespace Unv.AdaptiveHuffmanLib
 
 
 		#region Methods
+		/// <summary>
+		/// This method will encode and write the given string to the output stream.
+		/// </summary>
+		/// <param name="formatString">A composite format string.</param>
+		/// <param name="inputObjects">An object to write using format.</param>
 		public void Write(string formatString, params object[] inputObjects)
 		{
+			DisposeCheck();
 			string input = string.Format(formatString, inputObjects);
 			Write(input);
 		}
 
+		/// <summary>
+		/// This method will encode and write the given string to the output stream.
+		/// </summary>
+		/// <param name="inputString"></param>
 		public void Write(string inputString)
 		{
+			DisposeCheck();
+
+			// I'll be using a single list getting the encoded bits to reduce
+			// the number of array allocations by a bit.
 			List<bool> characterBits = new List<bool>();
 
+			// Loop through each character we need to write.
 			for (int i = 0; i < inputString.Length; i++)
 			{
-				var inputCharacter = inputString[i];
-				var encodedCharacter = _characterEncoder.EncodeCharacter(inputCharacter);
+				// Encode the current character.
+				var inputCharacter		= inputString[i];
+				var encodedCharacter	= _characterEncoder.EncodeCharacter(inputCharacter);
 
+				// Move the encoded character bits to the buffer.
 				for (int j = 0; j < encodedCharacter.Length; j++)
 					characterBits.Add(encodedCharacter[j]);
 
 				_bitBuffer.AddRange(characterBits);
 				characterBits.Clear();
 
+				// Flush the buffer if we've gone past the number bytes
+				// the user wants us to use for the buffer.
 				if (ShouldFlush)
 					Flush();
 			}
 		}
 
+		/// <summary>
+		/// This method will encode and write the given string to a new line in the output stream.
+		/// </summary>
+		/// <param name="formatString">A composite format string.</param>
+		/// <param name="inputObjects">An object to write using format.</param>
 		public void WriteLine(string formatString, params object[] inputObjects)
 		{
+			DisposeCheck();
 			string input = string.Format(formatString, inputObjects);
 			WriteLine(input);
 		}
 
+		/// <summary>
+		/// This method will encode and write the given string to a new line in the output stream.
+		/// </summary>
+		/// <param name="inputString"></param>
 		public void WriteLine(string inputString)
 		{
+			DisposeCheck();
 			Write(inputString);
 			Write(NewLine);
 		}
 
+		/// <summary>
+		/// This method will flush any complete bytes in the buffer to the output stream.
+		/// </summary>
 		public void Flush()
 		{
 			int byteCount = _bitBuffer.Count / 8;
@@ -159,6 +201,9 @@ namespace Unv.AdaptiveHuffmanLib
 			_output.Flush();
 		}
 
+		/// <summary>
+		/// This method will close and dispose of all resources used by the HuffmanFileWriter instance.
+		/// </summary>
 		public void Close()
 		{
 			Dispose();
@@ -169,12 +214,36 @@ namespace Unv.AdaptiveHuffmanLib
 			if (_isDisposed)
 				return;
 
+			// Encode the end of file character, so that the reader will
+			// know when it has reached the end encoded portion of the file.
 			Write(EOF);
+
+			// Add fake bits to the end of the buffer so that we can evenly
+			// fill out each the last byte.
 			while (_bitBuffer.Count % 8 != 0)
 				_bitBuffer.Add(true);
 
+			// Flush out anything that's left.
 			Flush();
+
+			// Clear out the output stream and the huffman tree.
 			_output.Dispose();
+			_characterEncoder.ClearTree();
+
+			// Free any items we are holding so that the garbage collector
+			// can do its job.
+			_bitBuffer			= null;
+			_characterEncoder	= null;
+			_output				= null;
+
+			// Mark this item as disposed.
+			_isDisposed			= true;
+		}
+
+		private void DisposeCheck()
+		{
+			if (_isDisposed)
+				throw new InvalidOperationException("This HuffmanFileWriter is no longer able to write.");
 		}
 		#endregion
 	}

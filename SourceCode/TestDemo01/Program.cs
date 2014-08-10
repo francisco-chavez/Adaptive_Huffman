@@ -18,8 +18,6 @@ namespace TestDemo01
 			string testInput = "mississippi river";
 			testInput = testInput + "   " + testInput;
 
-
-
 			//HuffmanTree tree = new HuffmanTree();
 			//string[] treeInfo;
 
