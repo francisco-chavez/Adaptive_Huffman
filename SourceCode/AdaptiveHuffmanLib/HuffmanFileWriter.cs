@@ -149,15 +149,19 @@ namespace Unv.AdaptiveHuffmanLib
 			if (byteCount == 0)
 				return;
 
-			byte[] bytes = new byte[byteCount];
-			var flushableBits = _bitBuffer.Take(byteCount * 8);
-			BitArray bitCompressor = new BitArray(flushableBits.ToArray());
+			byte[]		bytes			= new byte[byteCount];
+			var			flushableBits	= _bitBuffer.Take(byteCount * 8);
+			BitArray	bitCompressor	= new BitArray(flushableBits.ToArray());
+			
 			bitCompressor.CopyTo(bytes, 0);
-
 			_bitBuffer.RemoveRange(0, byteCount * 8);
-
 			_output.Write(bytes, 0, byteCount);
 			_output.Flush();
+		}
+
+		public void Close()
+		{
+			Dispose();
 		}
 
 		public void Dispose()
@@ -165,7 +169,12 @@ namespace Unv.AdaptiveHuffmanLib
 			if (_isDisposed)
 				return;
 
-			throw new NotImplementedException();
+			Write(EOF);
+			while (_bitBuffer.Count % 8 != 0)
+				_bitBuffer.Add(true);
+
+			Flush();
+			_output.Dispose();
 		}
 		#endregion
 	}
