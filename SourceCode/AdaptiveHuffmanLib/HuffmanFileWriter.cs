@@ -13,7 +13,13 @@ namespace Unv.AdaptiveHuffmanLib
 		: IDisposable
 	{
 		#region Constructors
+		private HuffmanFileWriter()
+		{
+			NewLine = Environment.NewLine;
+		}
+
 		public HuffmanFileWriter(string filePath, FileMode fileMode = FileMode.Create, FileAccess fileAccess = FileAccess.ReadWrite)
+			: this()
 		{
 			FileStream fileStream = File.Open(filePath, fileMode, fileAccess);
 
@@ -24,6 +30,7 @@ namespace Unv.AdaptiveHuffmanLib
 		}
 
 		public HuffmanFileWriter(FileStream outputStream)
+			: this()
 		{
 			if (outputStream == null)
 				throw new ArgumentNullException("No Stream was given to the Huffman File Writer.");
@@ -66,15 +73,50 @@ namespace Unv.AdaptiveHuffmanLib
 				if (value < 1)
 					n_preferedBufferSize = DEFAULT_PREFERED_BUFFER_SIZE;
 
-				if (_bitBuffer.Count / 8 > n_preferedBufferSize)
+				if (ShouldFlush)
 					Flush();
 			}
 		}
 		private int n_preferedBufferSize = DEFAULT_PREFERED_BUFFER_SIZE;
+
+		private bool ShouldFlush
+		{
+			get { return _bitBuffer.Count / 8 >= PreferedBufferSize; }
+		}
+
+		public string NewLine
+		{
+			get { return n_newLine; }
+			set { n_newLine = (value == null) ? Environment.NewLine : value; }
+		}
+		private string n_newLine;
 		#endregion
 
 
 		#region Methods
+		public void Write(string formatString, params object[] inputObjects)
+		{
+			string input = string.Format(formatString, inputObjects);
+			Write(input);
+		}
+
+		public void Write(string inputString)
+		{
+
+		}
+
+		public void WriteLine(string formatString, params object[] inputObjects)
+		{
+			string input = string.Format(formatString, inputObjects);
+			WriteLine(input);
+		}
+
+		public void WriteLine(string inputString)
+		{
+			Write(inputString);
+			Write(NewLine);
+		}
+
 		public void Flush()
 		{
 			int byteCount = _bitBuffer.Count / 8;
