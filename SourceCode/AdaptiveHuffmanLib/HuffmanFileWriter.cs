@@ -49,7 +49,8 @@ namespace Unv.AdaptiveHuffmanLib
 
 
 		#region Attributes
-		private const int	DEFAULT_PREFERED_BUFFER_SIZE = 32;
+		private const int	DEFAULT_PREFERED_BUFFER_SIZE	= 32;
+		internal const char EOF_CHARACTER					= (char) 3;
 
 		private bool		_isDisposed			= false;
 		private HuffmanTree _characterEncoder	= new HuffmanTree();
@@ -60,6 +61,15 @@ namespace Unv.AdaptiveHuffmanLib
 
 
 		#region Properties
+		/// <summary>
+		/// This character is used to mark the end of the text to be encoded. If your 
+		/// text includes this character, it is recomended to use an escape sequence 
+		/// that doesn't contain this character in any text you write. Any text after 
+		/// the EOF character will be considered bit filler for making sure the file 
+		/// uses the proper number of bits in each byte.
+		/// </summary>
+		public string EOF { get { return EOF_CHARACTER.ToString(); } }
+
 		public int PreferedBufferSize
 		{
 			get { return n_preferedBufferSize; }
@@ -102,7 +112,22 @@ namespace Unv.AdaptiveHuffmanLib
 
 		public void Write(string inputString)
 		{
+			List<bool> characterBits = new List<bool>();
 
+			for (int i = 0; i < inputString.Length; i++)
+			{
+				var inputCharacter = inputString[i];
+				var encodedCharacter = _characterEncoder.EncodeCharacter(inputCharacter);
+
+				for (int j = 0; j < encodedCharacter.Length; j++)
+					characterBits.Add(encodedCharacter[j]);
+
+				_bitBuffer.AddRange(characterBits);
+				characterBits.Clear();
+
+				if (ShouldFlush)
+					Flush();
+			}
 		}
 
 		public void WriteLine(string formatString, params object[] inputObjects)
