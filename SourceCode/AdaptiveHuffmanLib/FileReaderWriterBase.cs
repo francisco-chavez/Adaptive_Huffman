@@ -20,6 +20,16 @@ namespace Unv.AdaptiveHuffmanLib
 		#endregion
 
 
+		#region Properties
+		public string NewLine
+		{
+			get { return n_newLine; }
+			set { n_newLine = (value == null) ? Environment.NewLine : value; }
+		}
+		private string n_newLine;
+		#endregion
+
+
 		#region Methods
 		/// <summary>
 		/// This method will close and dispose of all resources used by this class instance.

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,22 +35,29 @@ namespace Unv.AdaptiveHuffmanLib
 		#endregion
 
 
-		#region Properties
-		public bool EndOfFile { get { throw new NotImplementedException(); } }
+		#region Attributes
+		private Queue<char> _characterBuffer		= new Queue<char>();
+		private bool		_hasReachedEndOfFile	= false;
+		#endregion
 
-		public string NewLine
-		{
-			get { return n_newLine; }
-			set { n_newLine = (value == null) ? Environment.NewLine : value; }
-		}
-		private string n_newLine;
+
+		#region Properties
+		public bool EndOfFile { get { return _hasReachedEndOfFile; } }
 		#endregion
 
 
 		#region Methods
 		public char Read()
 		{
-			throw new NotImplementedException();
+			while (_characterBuffer.Count < 2)
+				ReadFromStream();
+
+			char result = _characterBuffer.Dequeue();
+
+			if (_characterBuffer.Peek() == EOF_CHARACTER)
+				_hasReachedEndOfFile = true;
+
+			return result;
 		}
 
 		public int Read(char[] buffer, int index, int count)
@@ -65,6 +73,21 @@ namespace Unv.AdaptiveHuffmanLib
 		public string ReadToEnd()
 		{
 			throw new NotImplementedException();
+		}
+
+		private void ReadFromStream()
+		{
+			byte[] bufferBytes = new byte[32];
+			_fileStream.Read(bufferBytes, 0, 32);
+			BitArray  bufferBits = new BitArray(bufferBytes);
+			bool[] readableBits = new bool[bufferBits.Count];
+
+			for (int i = 0; i < bufferBits.Count; i++)
+				readableBits[i] = bufferBits[i];
+			char[] readCharacters = _huffmanTree.DecodeCharacters(readableBits);
+
+			for (int i = 0; i < readCharacters.Length; i++)
+				_characterBuffer.Enqueue(readCharacters[i]);
 		}
 
 		public override void Dispose()

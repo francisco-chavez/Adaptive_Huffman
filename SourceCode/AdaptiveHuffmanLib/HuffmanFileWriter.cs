@@ -97,13 +97,6 @@ namespace Unv.AdaptiveHuffmanLib
 		{
 			get { return _bitBuffer.Count / 8 >= PreferedBufferSize; }
 		}
-
-		public string NewLine
-		{
-			get { return n_newLine; }
-			set { n_newLine = (value == null) ? Environment.NewLine : value; }
-		}
-		private string n_newLine;
 		#endregion
 
 
