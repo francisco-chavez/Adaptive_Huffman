@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace Unv.AdaptiveHuffmanLib
 {
-	public class HuffmanFileWriter
-		: IDisposable
+	public sealed class HuffmanFileWriter
+		: FileReaderWriterBase
 	{
 		#region Constructors
 		private HuffmanFileWriter()
@@ -26,7 +26,7 @@ namespace Unv.AdaptiveHuffmanLib
 			if (!fileStream.CanWrite)
 				throw new ArgumentException("Writing permissions were not given for file.");
 
-			_output = fileStream;
+			_fileStream = fileStream;
 		}
 
 		public HuffmanFileWriter(FileStream outputStream)
@@ -38,7 +38,7 @@ namespace Unv.AdaptiveHuffmanLib
 			if (!outputStream.CanWrite)
 				throw new ArgumentException("The Stream given to the Huffman File Writer does not support writing permissions.");
 
-			_output = outputStream;
+			_fileStream = outputStream;
 		}
 
 		~HuffmanFileWriter()
@@ -50,13 +50,8 @@ namespace Unv.AdaptiveHuffmanLib
 
 		#region Attributes
 		private const int	DEFAULT_PREFERED_BUFFER_SIZE	= 32;
-		internal const char EOF_CHARACTER					= (char) 3;
 
-		private bool		_isDisposed			= false;
-		private HuffmanTree _characterEncoder	= new HuffmanTree();
-		private List<bool>	_bitBuffer			= new List<bool>(DEFAULT_PREFERED_BUFFER_SIZE * 8);
-
-		private FileStream	_output;
+		private List<bool> _bitBuffer = new List<bool>(DEFAULT_PREFERED_BUFFER_SIZE * 8);
 		#endregion
 
 
@@ -142,7 +137,7 @@ namespace Unv.AdaptiveHuffmanLib
 			{
 				// Encode the current character.
 				var inputCharacter		= inputString[i];
-				var encodedCharacter	= _characterEncoder.EncodeCharacter(inputCharacter);
+				var encodedCharacter	= _huffmanTree.EncodeCharacter(inputCharacter);
 
 				// Move the encoded character bits to the buffer.
 				for (int j = 0; j < encodedCharacter.Length; j++)
@@ -197,19 +192,11 @@ namespace Unv.AdaptiveHuffmanLib
 			
 			bitCompressor.CopyTo(bytes, 0);
 			_bitBuffer.RemoveRange(0, byteCount * 8);
-			_output.Write(bytes, 0, byteCount);
-			_output.Flush();
+			_fileStream.Write(bytes, 0, byteCount);
+			_fileStream.Flush();
 		}
 
-		/// <summary>
-		/// This method will close and dispose of all resources used by the HuffmanFileWriter instance.
-		/// </summary>
-		public void Close()
-		{
-			Dispose();
-		}
-
-		public void Dispose()
+		public override void Dispose()
 		{
 			if (_isDisposed)
 				return;
@@ -227,14 +214,14 @@ namespace Unv.AdaptiveHuffmanLib
 			Flush();
 
 			// Clear out the output stream and the huffman tree.
-			_output.Dispose();
-			_characterEncoder.ClearTree();
+			_fileStream.Dispose();
+			_huffmanTree.ClearTree();
 
 			// Free any items we are holding so that the garbage collector
 			// can do its job.
-			_bitBuffer			= null;
-			_characterEncoder	= null;
-			_output				= null;
+			_bitBuffer		= null;
+			_huffmanTree	= null;
+			_fileStream		= null;
 
 			// Mark this item as disposed.
 			_isDisposed			= true;

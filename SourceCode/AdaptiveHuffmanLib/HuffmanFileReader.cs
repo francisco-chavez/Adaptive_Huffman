@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Unv.AdaptiveHuffmanLib
 {
-	public class HuffmanFileReader
-		: IDisposable
+	public sealed class HuffmanFileReader
+		: FileReaderWriterBase
 	{
 		#region Constructors
 		private HuffmanFileReader()
@@ -31,15 +31,6 @@ namespace Unv.AdaptiveHuffmanLib
 		{
 			Dispose();
 		}
-		#endregion
-
-
-		#region Attributes
-		internal const char EOF_CHARACTER = HuffmanFileWriter.EOF_CHARACTER;
-
-		private bool _isDisposed = false;
-		private HuffmanTree _characterDecoder = new HuffmanTree();
-		private FileStream _input;
 		#endregion
 
 
@@ -76,12 +67,7 @@ namespace Unv.AdaptiveHuffmanLib
 			throw new NotImplementedException();
 		}
 
-		public void Close()
-		{
-			Dispose();
-		}
-
-		public void Dispose()
+		public override void Dispose()
 		{
 			throw new NotImplementedException();
 		}
