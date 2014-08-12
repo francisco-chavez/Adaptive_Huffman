@@ -62,7 +62,14 @@ namespace Unv.AdaptiveHuffmanLib
 
 		public int Read(char[] buffer, int index, int count)
 		{
-			throw new NotImplementedException();
+			if (index < 0 || index >= buffer.Length)
+				throw new IndexOutOfRangeException();
+
+			int charactersRead = 0;
+			for (; (charactersRead < count) && ((index + charactersRead) < buffer.Length) && (!EndOfFile); charactersRead++)
+				buffer[charactersRead + index] = Read();
+
+			return charactersRead;
 		}
 
 		public string ReadLine()
@@ -72,14 +79,19 @@ namespace Unv.AdaptiveHuffmanLib
 
 		public string ReadToEnd()
 		{
-			throw new NotImplementedException();
+			StringBuilder builder = new StringBuilder();
+			
+			while (!EndOfFile)
+				builder.Append(Read());
+
+			return builder.ToString();
 		}
 
 		private void ReadFromStream()
 		{
 			byte[] bufferBytes = new byte[32];
 			_fileStream.Read(bufferBytes, 0, 32);
-			BitArray  bufferBits = new BitArray(bufferBytes);
+			BitArray bufferBits = new BitArray(bufferBytes);
 			bool[] readableBits = new bool[bufferBits.Count];
 
 			for (int i = 0; i < bufferBits.Count; i++)
