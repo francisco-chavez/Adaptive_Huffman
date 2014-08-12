@@ -94,7 +94,7 @@ namespace Unv.AdaptiveHuffmanLib
 						int charSize = UnicodeEncoding.CharSize * 8;
 
 						// Using any leftover bits from the last decode command (if 
-						// there are any), we will continue looking for bits untill we 
+						// there are any), we will continue looking for bits until we 
 						// have enough to form a single character.
 						for (int i = 0; _leftOverBits.Count < charSize && bitIndex < bits.Length; i++, bitIndex++)
 						{
