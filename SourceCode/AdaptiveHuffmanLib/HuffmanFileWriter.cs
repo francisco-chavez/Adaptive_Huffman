@@ -13,13 +13,8 @@ namespace Unv.AdaptiveHuffmanLib
 		: FileReaderWriterBase
 	{
 		#region Constructors
-		private HuffmanFileWriter()
-		{
-			NewLine = Environment.NewLine;
-		}
-
 		public HuffmanFileWriter(string filePath, FileMode fileMode = FileMode.Create, FileAccess fileAccess = FileAccess.ReadWrite)
-			: this()
+			: base()
 		{
 			FileStream fileStream = File.Open(filePath, fileMode, fileAccess);
 
@@ -30,7 +25,7 @@ namespace Unv.AdaptiveHuffmanLib
 		}
 
 		public HuffmanFileWriter(FileStream outputStream)
-			: this()
+			: base()
 		{
 			if (outputStream == null)
 				throw new ArgumentNullException("No Stream was given to the Huffman File Writer.");

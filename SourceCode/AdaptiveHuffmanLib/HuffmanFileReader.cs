@@ -13,19 +13,27 @@ namespace Unv.AdaptiveHuffmanLib
 		: FileReaderWriterBase
 	{
 		#region Constructors
-		private HuffmanFileReader()
-		{
-		}
-
 		public HuffmanFileReader(string filePath, FileMode fileMode = FileMode.Open, FileAccess fileAccess = FileAccess.Read)
-			: this()
+			: base()
 		{
-			throw new NotImplementedException();
+			FileStream fileStream = File.Open(filePath, fileMode, fileAccess);
+
+			if (!fileStream.CanRead)
+				throw new ArgumentException("Reading permissions were not given for file.");
+
+			_fileStream = fileStream;
 		}
 
 		public HuffmanFileReader(FileStream inputStream)
+			: base()
 		{
-			throw new NotImplementedException();
+			if (inputStream == null)
+				throw new ArgumentNullException("No Stream was given to read from.");
+
+			if (!inputStream.CanRead)
+				throw new ArgumentException("Reading permissions were not given for the FileStream.");
+
+			_fileStream = inputStream;
 		}
 
 		~HuffmanFileReader()

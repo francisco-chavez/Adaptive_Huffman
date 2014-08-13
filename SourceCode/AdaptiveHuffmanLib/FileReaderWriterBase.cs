@@ -20,6 +20,14 @@ namespace Unv.AdaptiveHuffmanLib
 		#endregion
 
 
+		#region Constructors
+		protected FileReaderWriterBase()
+		{
+			NewLine = Environment.NewLine;
+		}
+		#endregion
+
+
 		#region Properties
 		public string NewLine
 		{
