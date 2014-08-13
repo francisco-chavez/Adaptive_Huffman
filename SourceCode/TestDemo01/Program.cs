@@ -15,50 +15,16 @@ namespace TestDemo01
 	{
 		static void Main(string[] args)
 		{
-			string testInput = "mississippi river";
-			testInput = testInput + "   " + testInput;
+			bool test1Passed = RunTest1();
+		}
 
-			//HuffmanTree tree = new HuffmanTree();
-			//string[] treeInfo;
+		static bool RunTest1()
+		{
+			bool result = true;
 
-			//treeInfo = tree.GetTestReadout();
-			//List<bool> encodedTestInput = new List<bool>();
 
-			//for (int i = 0; i < testInput.Length; i++)
-			//{
-			//	char		inputCharacter		= testInput[i];
-			//	BitArray	encodedCharacter	= tree.EncodeCharacter(inputCharacter);
-			//	treeInfo = tree.GetTestReadout(true);
 
-			//	Console.WriteLine("{0}: {1}", inputCharacter, ReadableBits(encodedCharacter));
-
-			//	for (int j = 0; j < encodedCharacter.Length; j++)
-			//		encodedTestInput.Add(encodedCharacter[j]);
-			//}
-
-			//HuffmanTree		encodeTree1				= new HuffmanTree();
-			//HuffmanTree		decodeTree1				= new HuffmanTree();
-			//StringBuilder	decodedStringBuilder	= new StringBuilder();
-
-			//for (int i = 0; i < testInput.Length; i++)
-			//{
-			//	char		inputCharacter		= testInput[i];
-			//	BitArray	encodedCharacter	= encodeTree1.EncodeCharacter(inputCharacter);
-			//	bool[]		encodedBits			= Enumerable.Range(0, encodedCharacter.Length).Select(j => { return encodedCharacter[j]; }).ToArray();
-			//	char		characterFound		= decodeTree1.DecodeCharacters(encodedBits)[0];
-			//	decodedStringBuilder.Append(characterFound);
-			//}
-
-			//string decodedTestString = decodedStringBuilder.ToString();
-
-			//if (testInput == decodedTestString)
-			//{
-			//	Console.WriteLine("It works");
-			//}
-			//else
-			//{
-			//	Console.WriteLine("Keep working at it.");
-			//}
+			return result;
 		}
 
 		static string ReadableBits(BitArray bitArray)
