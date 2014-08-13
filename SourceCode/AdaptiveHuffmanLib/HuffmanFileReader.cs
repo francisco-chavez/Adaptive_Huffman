@@ -115,7 +115,14 @@ namespace Unv.AdaptiveHuffmanLib
 
 			int charactersRead = 0;
 			for (; (charactersRead < count) && ((index + charactersRead) < buffer.Length) && (!EndOfFile); charactersRead++)
-				buffer[charactersRead + index] = Read();
+			{
+				char character = Read();
+
+				if(character == EOF_CHARACTER)
+					break;
+
+				buffer[charactersRead + index] = character;
+			}
 
 			return charactersRead;
 		}

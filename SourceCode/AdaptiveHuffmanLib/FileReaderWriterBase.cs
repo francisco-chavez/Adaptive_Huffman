@@ -12,7 +12,7 @@ namespace Unv.AdaptiveHuffmanLib
 		: IDisposable
 	{
 		#region Attributes
-		protected const char EOF_CHARACTER = (char) 3;
+		public const char EOF_CHARACTER = (char) 3;
 
 		protected bool			_isDisposed		= false;
 		protected HuffmanTree	_huffmanTree	= new HuffmanTree();
