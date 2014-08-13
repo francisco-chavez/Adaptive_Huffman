@@ -49,6 +49,8 @@ namespace Unv.AdaptiveHuffmanLib
 		#region Methods
 		public char Read()
 		{
+			PreReadCheck();
+
 			while (_characterBuffer.Count < 2)
 				ReadFromStream();
 
@@ -62,6 +64,8 @@ namespace Unv.AdaptiveHuffmanLib
 
 		public int Read(char[] buffer, int index, int count)
 		{
+			PreReadCheck();
+
 			if (index < 0 || index >= buffer.Length)
 				throw new IndexOutOfRangeException();
 
@@ -74,11 +78,45 @@ namespace Unv.AdaptiveHuffmanLib
 
 		public string ReadLine()
 		{
-			throw new NotImplementedException();
+			PreReadCheck();
+
+			string newLine = NewLine;
+			int endingLength = newLine.Length;
+
+			StringBuilder builder = new StringBuilder();
+
+			while (true)
+			{
+				if (EndOfFile)
+					break;
+
+				builder.Append(Read());
+
+				if (builder.Length >= endingLength)
+				{
+					bool endOfLineReached = true;
+					for (int i = 0; i < endingLength; i++)
+						if (builder[builder.Length - (i + 1)] != newLine[endingLength - (i + 1)])
+						{
+							endOfLineReached = false;
+							break;
+						}
+
+					if (endOfLineReached)
+					{
+						builder.Remove(builder.Length - (1 + endingLength), endingLength);
+						break;
+					}
+				}
+			}
+
+			return builder.ToString();
 		}
 
 		public string ReadToEnd()
 		{
+			PreReadCheck();
+
 			StringBuilder builder = new StringBuilder();
 			
 			while (!EndOfFile)
@@ -102,9 +140,28 @@ namespace Unv.AdaptiveHuffmanLib
 				_characterBuffer.Enqueue(readCharacters[i]);
 		}
 
+		private void PreReadCheck()
+		{
+			if (_isDisposed)
+				throw new ObjectDisposedException("Reading is not allowed once the HuffmanFileReader has been disposed.");
+			if (EndOfFile)
+				throw new NotSupportedException("Reading is not supported once the end of the file has been reached.");
+		}
+
 		public override void Dispose()
 		{
-			throw new NotImplementedException();
+			if (_isDisposed)
+				return;
+
+			_fileStream.Dispose();
+			_characterBuffer.Clear();
+			_huffmanTree.ClearTree();
+
+			_fileStream			= null;
+			_characterBuffer	= null;
+			_huffmanTree		= null;
+
+			_isDisposed = true;
 		}
 		#endregion
 	}
