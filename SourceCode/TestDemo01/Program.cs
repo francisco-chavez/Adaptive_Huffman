@@ -16,6 +16,7 @@ namespace TestDemo01
 		static void Main(string[] args)
 		{
 			bool test1Passed = RunTestBatch01();
+			bool test2Passed = RunTestBatch02();
 		}
 
 		/// <summary>
@@ -94,6 +95,49 @@ namespace TestDemo01
 					worked = false;
 			}
 
+
+			return worked;
+		}
+
+		static bool RunTestBatch02()
+		{
+			bool worked = true;
+			string filePath = "TestFile2a.huf";
+
+			string testString = "Mississipi River";
+
+			using (HuffmanFileWriter writer = new HuffmanFileWriter(filePath))
+			{
+				writer.Write(testString);
+			}
+
+			Thread.Sleep(20);
+
+
+			using (HuffmanFileReader reader1 = new HuffmanFileReader(filePath))
+			{
+				string s = reader1.ReadToEnd();
+
+				if ((testString + reader1.NewLine) != s)
+					worked = false;
+
+				if (!reader1.EndOfFile)
+					worked = false;
+			}
+
+			Thread.Sleep(20);
+
+
+			using (HuffmanFileReader reader2 = new HuffmanFileReader(filePath))
+			{
+				string s = reader2.ReadLine();
+
+				if (s != testString)
+					worked = false;
+
+				if (!reader2.EndOfFile)
+					worked = false;
+			}
 
 			return worked;
 		}
