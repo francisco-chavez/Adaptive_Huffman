@@ -85,12 +85,8 @@ namespace Unv.AdaptiveHuffmanLib
 			// Grab the first character in the buffer.
 			char result = _characterBuffer.Dequeue();
 
-			if (result == EOF_CHARACTER)
-				_hasReachedEndOfFile = true;
-
-			// If the next character in the buffer is the End of File character, then
-			// mark down that we are done reading the file.
-			if (_characterBuffer.Peek() == EOF_CHARACTER)
+			// Check for end of file.
+			if ((result == EOF_CHARACTER) || (_characterBuffer.Peek() == EOF_CHARACTER))
 				_hasReachedEndOfFile = true;
 
 			// Return the character that was read.
@@ -223,10 +219,10 @@ namespace Unv.AdaptiveHuffmanLib
 
 			// Split the bytes into their individual bits for
 			// file decoding.
-			BitArray bufferBits = new BitArray(bufferBytes);
+			BitArray bufferBits = new BitArray(bufferBytes.Take(bytesRead).ToArray());
 			bool[] readableBits = new bool[bufferBits.Count];
 
-			for (int i = 0; i < bytesRead; i++)
+			for (int i = 0; i < bytesRead * 8; i++)
 				readableBits[i] = bufferBits[i];
 
 			// Decode the bits into characters

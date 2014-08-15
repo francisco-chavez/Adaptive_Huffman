@@ -108,7 +108,7 @@ namespace TestDemo01
 
 			using (HuffmanFileWriter writer = new HuffmanFileWriter(filePath))
 			{
-				writer.Write(testString);
+				writer.WriteLine(testString);
 			}
 
 			Thread.Sleep(20);
