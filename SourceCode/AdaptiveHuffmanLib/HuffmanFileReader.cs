@@ -198,7 +198,7 @@ namespace Unv.AdaptiveHuffmanLib
 				builder.Append(Read());
 
 			// Making sure we don't return anything beyound the EOF character (or the EOF character).
-			if (EOF_CHARACTER == builder[0])
+			if (builder.Length == 0 || EOF_CHARACTER == builder[0])
 				return string.Empty;
 
 			if (builder.Length != 0 && builder[builder.Length - 1] == EOF_CHARACTER)
@@ -221,6 +221,13 @@ namespace Unv.AdaptiveHuffmanLib
 			// file decoding.
 			BitArray bufferBits = new BitArray(bufferBytes.Take(bytesRead).ToArray());
 			bool[] readableBits = new bool[bufferBits.Count];
+
+			// Adding a check that should help with files that are truely empty.
+			if (bytesRead == 0)
+			{
+				_characterBuffer.Enqueue(EOF_CHARACTER);
+				return;
+			}
 
 			for (int i = 0; i < bytesRead * 8; i++)
 				readableBits[i] = bufferBits[i];
