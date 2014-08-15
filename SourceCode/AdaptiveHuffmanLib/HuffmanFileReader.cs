@@ -169,7 +169,7 @@ namespace Unv.AdaptiveHuffmanLib
 					// we will remove it from the results and stop reading.
 					if (endOfLineReached)
 					{
-						builder.Remove(builder.Length - (1 + endingLength), endingLength);
+						builder.Remove(builder.Length - endingLength, endingLength);
 						break;
 					}
 				}
@@ -193,7 +193,7 @@ namespace Unv.AdaptiveHuffmanLib
 			PreReadCheck();
 
 			StringBuilder builder = new StringBuilder();
-			
+
 			while (!EndOfFile)
 				builder.Append(Read());
 
