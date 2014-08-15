@@ -17,6 +17,7 @@ namespace TestDemo01
 		{
 			bool test1Passed = RunTestBatch01();
 			bool test2Passed = RunTestBatch02();
+			bool test3Passed = RunTestBatch03();
 		}
 
 		/// <summary>
@@ -138,6 +139,55 @@ namespace TestDemo01
 				if (!reader2.EndOfFile)
 					worked = false;
 			}
+
+			return worked;
+		}
+
+		static bool RunTestBatch03()
+		{
+			List<string> playLines = new List<string>(120);
+
+			using (var stream = File.OpenRead(@"./TextDocs/TextFile1.txt"))
+			using (var reader = new StreamReader(stream))
+			{
+				while (!reader.EndOfStream)
+				{
+					string textLine = reader.ReadLine();
+					playLines.Add(textLine);
+				}
+			}
+
+			Thread.Sleep(20);
+
+			string testPath = @"./TestFile3.huf";
+
+			using (var encoder = new HuffmanFileWriter(testPath))
+			{
+				foreach (var line in playLines)
+					encoder.WriteLine(line);
+			}
+
+			Thread.Sleep(20);
+
+			List<string> testOutput = new List<string>(playLines.Count);
+
+			using (var decoder = new HuffmanFileReader(testPath))
+			{
+				while (!decoder.EndOfFile)
+				{
+					string line = decoder.ReadLine();
+					testOutput.Add(line);
+				}
+			}
+
+			bool worked = true;
+
+			if (playLines.Count != testOutput.Count)
+				return false;
+
+			for (int i = 0; i < playLines.Count; i++)
+				if (playLines[i] != testOutput[i])
+					worked = false;
 
 			return worked;
 		}

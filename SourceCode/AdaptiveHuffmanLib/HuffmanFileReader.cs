@@ -177,7 +177,7 @@ namespace Unv.AdaptiveHuffmanLib
 
 			// If the first characer is the End Of File character, then we shouldn't be 
 			// returning anything.
-			if (builder[0] == EOF_CHARACTER)
+			if (builder.Length == 0 || builder[0] == EOF_CHARACTER)
 				return string.Empty;
 
 			// Return our results.
