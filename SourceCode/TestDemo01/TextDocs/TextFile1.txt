@@ -1,4 +1,5 @@
-﻿Romeo and Juliet
+﻿Text copied from: http://shakespeare.mit.edu/romeo_juliet/full.html
+Romeo and Juliet
 
 ACT I
 
@@ -103,4 +104,98 @@ SAMPSON
 GREGORY
 	No, marry; I fear thee!
 
+SAMPSON
+	Let us take the law of our sides; let them begin.
+
+GREGORY
+	I will frown as I pass by, and let them take it as
+	they list.
+
+SAMPSON
+	Nay, as they dare. I will bite my thumb at them;
+	which is a disgrace to them, if they bear it.
+
+	[Enter ABRAHAM and BALTHASAR]
+
+ABRAHAM
+	Do you bite your thumb at us, sir?
+
+SAMPSON
+	I do bite my thumb, sir.
+
+ABRAHAM
+	Do you bite your thumb at us, sir?
+
+SAMPSON
+	[Aside to GREGORY] Is the law of our side, if I say
+	ay?
+
+GREGORY
+	No.
+
+SAMPSON
+	No, sir, I do not bite my thumb at you, sir, but I 
+	bite my thumb, sir.
+
+GREGORY
+	Do you quarrel, sir?
+
+ABRAHAM
+	Quarrel sir! no, sir.
+
+SAMPSON
+	If you do, sir, I am for you: I serve as good a man as you.
+
+ABRAHAM
+	No better.
+
+SAMPSON
+	Well, sir.
+
+GREGORY
+	Say 'better:' here comes one of my master's kinsmen.
+
+SAMPSON
+	Yes, better, sir.
+
+ABRAHAM
+	You lie.
+
+SAMPSON
+	Draw, if you be men. Gregory, remember thy swashing blow.
+	[They fight]
+	[Enter BENVOLIO]
+
+BENVOLIO
+	Part, fools!
+	Put up your swords; you know not what you do.
+
+	[Beats down their swords]
+	[Enter TYBALT]
+
+TYBALT
+	What, art thou drawn among these heartless hinds?
+	Turn thee, Benvolio, lok upon thy death.
+
+BENVOLIO
+	I do but keep the peace: put up they sword,
+	Or manage it to part these men with me.
+
+TYBALT
+	What, drawn, and talk of peace! I hate the word,
+	As I hate hell, all Montagues, and thee:
+	Have at thee, coward!
+
+	[They fight]
+
+	[Enter, serveral of both houses, who join the fray; then enter Citizens, with clubs]
+
+First Citizen
+	Clubs, bills, and partisans! strike! beat them down!
+	Down with the Capulets! down with the Montagues!
+
+	[Enter CAPULET in his gown, and LADY CAPULET]
+
+CAPULET
+	What noise is this? Give me my long sword, ho!
 
