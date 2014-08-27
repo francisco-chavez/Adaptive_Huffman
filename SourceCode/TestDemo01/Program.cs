@@ -15,9 +15,16 @@ namespace TestDemo01
 	{
 		static void Main(string[] args)
 		{
+			DateTime t0;
+			DateTime t1;
+
+			t0 = DateTime.Now;
 			bool test1Passed = RunTestBatch01();
 			bool test2Passed = RunTestBatch02();
 			bool test3Passed = RunTestBatch03();
+			t1 = DateTime.Now;
+
+			var testTime = t1 - t0;
 		}
 
 		/// <summary>
@@ -145,7 +152,7 @@ namespace TestDemo01
 
 		static bool RunTestBatch03()
 		{
-			List<string> playLines = new List<string>(120);
+			List<string> playLines = new List<string>(4400);
 
 			using (var stream = File.OpenRead(@"./TextDocs/TextFile1.txt"))
 			using (var reader = new StreamReader(stream))
